@@ -1,27 +1,26 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
-  "author": "",
+  "name": "restrict-file-changes",
+  "description": "Restrict file changes of certain files",
+  "version": "0.1.0",
+  "author": "klismannsm",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/klismannsm/restrict-file-changes.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/klismannsm/restrict-file-changes/issues"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "file"
   ],
   "exports": {
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.13.1"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",

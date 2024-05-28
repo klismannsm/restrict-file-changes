@@ -1,23 +1,24 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Restrict file changes'
+description: 'Prevent file changes based on a regex'
+author: 'klismannsm'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
+# TODO
 branding:
   icon: 'heart'
-  color: 'red'
+  color: 'green'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  regex:
+    description: Regex to match the changed files paths (Javascript format)
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+  allowNewFiles:
+    description: Allow new files to be added
+    required: false
+    default: false
+  allowRemovedFiles:
+    description: Allow files to be removed
+    required: false
+    default: false
 
 runs:
   using: node20
