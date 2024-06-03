@@ -1,19 +1,31 @@
 import * as core from '@actions/core'
+import { getChangedFiles } from './changed-files'
+import { IEvaluatorFlags, evaluateFiles } from './files-evaluator'
+import { getPullRequestInfo } from './github-info'
+
+function getEvaluatorFlags(): IEvaluatorFlags {
+  return {
+    allowNewFiles: 'true' === core.getInput('allowNewFiles'),
+    allowRemovedFiles: 'true' === core.getInput('allowRemovedFiles'),
+  }
+}
 
 export async function run(): Promise<void> {
   try {
     const regexPattern: string = core.getInput('regex', { required: true })
-    const allowNewFiles: boolean = 'true' === core.getInput('allowNewFiles')
-    const allowRemovedFiles: boolean = 'true' === core.getInput('allowRemovedFiles')
+    const githubToken: string = core.getInput('githubToken', { required: true })
+    const prInfo = getPullRequestInfo()
+    const evaluatorFlags = getEvaluatorFlags()
 
     core.debug(`regex: ${regexPattern}`)
-    core.debug(`allowNewFiles: ${allowNewFiles}`)
-    core.debug(`allowRemovedFiles: ${allowRemovedFiles}`)
+    const changedFiles = await getChangedFiles(githubToken, prInfo)
 
-    core.info(`Action still in WIP`)
+    evaluateFiles(regexPattern, changedFiles, evaluatorFlags)
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message)
+    } else {
+      core.setFailed('Unknown error occurred')
     }
   }
 }
