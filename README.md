@@ -1,9 +1,9 @@
 # Restrict file changes action
 
-Created using the github [typescript action template](https://github.com/actions/typescript-action).
+Created using GitHub [TypeScript action template](https://github.com/actions/typescript-action).
 
 This action allows you to block pull requests that try to modify the files or folders based on the
-provided regex.
+provided regular expression.
 
 Syntax:
 
@@ -19,10 +19,10 @@ Syntax:
 
 Inputs:
 
-- `githubToken`: [**Required**] Github Token to authenticate the github API;
-- `regex`: [**Required**] Regex to match the changed files paths from a pull request. It must be
-  compatible with JavaScript regular expressions;
-  [Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions);
+- `githubToken`: [**Required**] GitHub Token to authenticate the API;
+- `regex`: [**Required**] Regular expression pattern to match the changed files paths from a
+           pull request. It must be compatible with JavaScript regular expressions -
+           [Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions);
 - `allowNewFiles`: [**Optional**] Whether to allow new files to be added or not;
 - `allowRemovedFiles`: [**Optional**] Whether to allow files to be deleted or not.
 
