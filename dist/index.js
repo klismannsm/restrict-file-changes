@@ -29323,7 +29323,7 @@ function getPullRequestInfo() {
     const { owner, repo } = github_1.context.repo;
     const { pull_request } = github_1.context.payload;
     if (!pull_request?.number) {
-        throw new Error('Invalid pull request number');
+        throw new Error('This action only supports pull request events');
     }
     return {
         repositoryOwner: owner,

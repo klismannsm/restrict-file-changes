@@ -10,7 +10,7 @@ export function getPullRequestInfo(): IPullRequestInformation {
   const { owner, repo } = context.repo
   const { pull_request } = context.payload
   if (!pull_request?.number) {
-    throw new Error('Invalid pull request number')
+    throw new Error('This action only supports pull request events')
   }
 
   return {
