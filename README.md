@@ -12,7 +12,7 @@ Syntax:
   uses: klismannsm/restrict-file-changes@v1
   with:
     githubToken: ${{ secrets.GITHUB_TOKEN }}
-    regex: src/important/.*\.txt
+    regex: src\/important\/.*\.txt
     allowNewFiles: false
     allowRemovedFiles: false
 ```
@@ -23,8 +23,8 @@ Inputs:
 - `regex`: [**Required**] Regular expression pattern to match the changed files paths from a
            pull request. It must be compatible with JavaScript regular expressions -
            [Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions);
-- `allowNewFiles`: [**Optional**] Whether to allow new files to be added or not;
-- `allowRemovedFiles`: [**Optional**] Whether to allow files to be deleted or not.
+- `allowNewFiles`: [**Optional**] Whether to allow new files to be added or not. **Default**: false;
+- `allowRemovedFiles`: [**Optional**] Whether to allow files to be deleted or not. **Default**: false.
 
 ## Events supported
 
