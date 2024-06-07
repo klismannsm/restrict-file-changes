@@ -2,8 +2,10 @@ import * as core from '@actions/core'
 import { IChangedFile } from './changed-files'
 
 export interface IEvaluatorFlags {
-  allowNewFiles: boolean
+  allowAddedFiles: boolean
   allowRemovedFiles: boolean
+  allowAdditions: boolean
+  allowDeletions: boolean
 }
 
 function isFileInfringingTheRule(
@@ -16,11 +18,19 @@ function isFileInfringingTheRule(
     return false
   }
 
-  if (flags.allowNewFiles && file.status === 'added') {
+  if (flags.allowAddedFiles && file.status === 'added') {
     return false
   }
 
   if (flags.allowRemovedFiles && file.status === 'removed') {
+    return false
+  }
+
+  if (flags.allowAdditions && file.additions > 0 && file.deletions === 0) {
+    return false
+  }
+
+  if (flags.allowDeletions && file.deletions > 0 && file.additions === 0) {
     return false
   }
 

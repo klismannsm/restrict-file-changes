@@ -29228,6 +29228,8 @@ function buildFile(file) {
     return {
         filename: file.filename,
         status: file.status,
+        additions: file.additions,
+        deletions: file.deletions,
     };
 }
 async function getChangedFiles(githubToken, prInfo) {
@@ -29283,10 +29285,16 @@ function isFileInfringingTheRule(regExp, flags, file) {
     if (!filenameMatches) {
         return false;
     }
-    if (flags.allowNewFiles && file.status === 'added') {
+    if (flags.allowAddedFiles && file.status === 'added') {
         return false;
     }
     if (flags.allowRemovedFiles && file.status === 'removed') {
+        return false;
+    }
+    if (flags.allowAdditions && file.additions > 0 && file.deletions === 0) {
+        return false;
+    }
+    if (flags.allowDeletions && file.deletions > 0 && file.additions === 0) {
         return false;
     }
     return true;
@@ -29372,8 +29380,10 @@ const files_evaluator_1 = __nccwpck_require__(2045);
 const github_info_1 = __nccwpck_require__(9086);
 function getEvaluatorFlags() {
     return {
-        allowNewFiles: 'true' === core.getInput('allowNewFiles'),
+        allowAddedFiles: 'true' === core.getInput('allowNewFiles'),
         allowRemovedFiles: 'true' === core.getInput('allowRemovedFiles'),
+        allowAdditions: 'true' === core.getInput('allowAdditions'),
+        allowDeletions: 'true' === core.getInput('allowDeletions'),
     };
 }
 async function run() {

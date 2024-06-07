@@ -7,9 +7,11 @@ jest.mock('@actions/core')
 
 describe('evaluateFiles', () => {
   const changedFiles: IChangedFile[] = [
-    { filename: 'modified-file.ts', status: 'modified' },
-    { filename: 'removed-file.ts', status: 'removed' },
-    { filename: 'added-file.ts', status: 'added' },
+    { filename: 'removed-file.ts', status: 'removed', additions: 0, deletions: 10 },
+    { filename: 'added-file.ts', status: 'added', additions: 10, deletions: 0 },
+    { filename: 'modified-file.ts', status: 'modified', additions: 20, deletions: 10 },
+    { filename: 'modified-file-additions.ts', status: 'modified', additions: 10, deletions: 0 },
+    { filename: 'modified-file-deletions.ts', status: 'modified', additions: 0, deletions: 10 },
   ]
 
   const mockCoreInfo = jest.fn()
@@ -30,8 +32,10 @@ describe('evaluateFiles', () => {
   it('should fail if there are infringing files', () => {
     const regexPattern = '.*ts'
     const flags: IEvaluatorFlags = {
-      allowNewFiles: false,
+      allowAddedFiles: false,
       allowRemovedFiles: false,
+      allowAdditions: false,
+      allowDeletions: false,
     }
 
     evaluateFiles(regexPattern, changedFiles, flags)
@@ -42,8 +46,10 @@ describe('evaluateFiles', () => {
   it('should not fail if there are no infringing files', () => {
     const regexPattern = '.*txt'
     const flags: IEvaluatorFlags = {
-      allowNewFiles: false,
+      allowAddedFiles: false,
       allowRemovedFiles: false,
+      allowAdditions: false,
+      allowDeletions: false,
     }
 
     evaluateFiles(regexPattern, changedFiles, flags)
@@ -52,25 +58,30 @@ describe('evaluateFiles', () => {
   })
 
   describe('when the infringing file was added', () => {
-    it('should fail if the allowNewFiles flag is OFF', () => {
+    it('should fail if the allowAddedFiles flag is OFF', () => {
       const regexPattern = 'added-file.ts'
       const flags: IEvaluatorFlags = {
-        allowNewFiles: false,
+        allowAddedFiles: false,
         allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: false,
       }
+      const expectedChangedFiles = [changedFiles[1]]
 
       evaluateFiles(regexPattern, changedFiles, flags)
       expect(mockCoreInfo).toHaveBeenCalledWith(
-        `Infringing files: ${JSON.stringify(changedFiles.splice(2, 1))}`,
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
       )
       expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
     })
 
-    it('should not fail if the allowNewFiles flag is ON', () => {
+    it('should not fail if the allowAddedFiles flag is ON', () => {
       const regexPattern = 'added-file.ts'
       const flags: IEvaluatorFlags = {
-        allowNewFiles: true,
+        allowAddedFiles: true,
         allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: false,
       }
 
       evaluateFiles(regexPattern, changedFiles, flags)
@@ -83,27 +94,104 @@ describe('evaluateFiles', () => {
     it('should fail if the allowRemovedFiles flag is OFF', () => {
       const regexPattern = 'removed-file.ts'
       const flags: IEvaluatorFlags = {
-        allowNewFiles: false,
+        allowAddedFiles: false,
         allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: false,
       }
+      const expectedChangedFiles = [changedFiles[0]]
 
       evaluateFiles(regexPattern, changedFiles, flags)
       expect(mockCoreInfo).toHaveBeenCalledWith(
-        `Infringing files: ${JSON.stringify(changedFiles.splice(1, 1))}`,
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
       )
       expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
     })
 
     it('should not fail if the allowRemovedFiles flag is ON', () => {
-      const regexPattern = 'added-file.ts'
+      const regexPattern = 'removed-file.ts'
       const flags: IEvaluatorFlags = {
-        allowNewFiles: false,
+        allowAddedFiles: false,
         allowRemovedFiles: true,
+        allowAdditions: false,
+        allowDeletions: false,
       }
 
       evaluateFiles(regexPattern, changedFiles, flags)
       expect(mockCoreInfo).toHaveBeenCalledWith('No files are infringing the rule')
       expect(mockCoreSetFailed).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when the infringing file had content added', () => {
+    it('should return all infringing files if the allowAdditions flag is OFF', () => {
+      const regexPattern = 'modified-file.*.ts'
+      const flags: IEvaluatorFlags = {
+        allowAddedFiles: false,
+        allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: false,
+      }
+      const expectedChangedFiles = [changedFiles[2], changedFiles[3], changedFiles[4]]
+
+      evaluateFiles(regexPattern, changedFiles, flags)
+      expect(mockCoreInfo).toHaveBeenCalledWith(
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
+      )
+      expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
+    })
+
+    it('should skip a file with only additions if the allowAdditions flag is ON', () => {
+      const regexPattern = 'modified-file.*.ts'
+      const flags: IEvaluatorFlags = {
+        allowAddedFiles: false,
+        allowRemovedFiles: false,
+        allowAdditions: true,
+        allowDeletions: false,
+      }
+      const expectedChangedFiles = [changedFiles[2], changedFiles[4]]
+
+      evaluateFiles(regexPattern, changedFiles, flags)
+      expect(mockCoreInfo).toHaveBeenCalledWith(
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
+      )
+      expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
+    })
+  })
+
+  describe('when the infringing file had content removed', () => {
+    it('should return all infringing files if the allowDeletions flag is OFF', () => {
+      const regexPattern = 'modified-file.*.ts'
+      const flags: IEvaluatorFlags = {
+        allowAddedFiles: false,
+        allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: false,
+      }
+      const expectedChangedFiles = [changedFiles[2], changedFiles[3], changedFiles[4]]
+
+      evaluateFiles(regexPattern, changedFiles, flags)
+      expect(mockCoreInfo).toHaveBeenCalledWith(
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
+      )
+      expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
+    })
+
+    it('should skip a file with only deletions if the allowDeletions flag is ON', () => {
+      const regexPattern = 'modified-file.*.ts'
+      const flags: IEvaluatorFlags = {
+        allowAddedFiles: false,
+        allowRemovedFiles: false,
+        allowAdditions: false,
+        allowDeletions: true,
+      }
+      const expectedChangedFiles = [changedFiles[2], changedFiles[3]]
+
+      evaluateFiles(regexPattern, changedFiles, flags)
+      expect(mockCoreInfo).toHaveBeenCalledWith(
+        `Infringing files: ${JSON.stringify(expectedChangedFiles)}`,
+      )
+      expect(mockCoreSetFailed).toHaveBeenCalledWith('There are files infringing the rule')
     })
   })
 })

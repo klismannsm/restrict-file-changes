@@ -14,9 +14,11 @@ describe('getChangedFiles', () => {
     number: 666,
   }
   const changedFiles: IChangedFile[] = [
-    { filename: 'modified-file.ts', status: 'modified' },
-    { filename: 'removed-file.ts', status: 'removed' },
-    { filename: 'added-file.ts', status: 'added' },
+    { filename: 'removed-file.ts', status: 'removed', additions: 0, deletions: 10 },
+    { filename: 'added-file.ts', status: 'added', additions: 10, deletions: 0 },
+    { filename: 'modified-file.ts', status: 'modified', additions: 20, deletions: 10 },
+    { filename: 'modified-file-additions.ts', status: 'modified', additions: 10, deletions: 0 },
+    { filename: 'modified-file-deletions.ts', status: 'modified', additions: 0, deletions: 10 },
   ]
 
   const mockPaginate = jest.fn().mockResolvedValue(changedFiles)
