@@ -15,6 +15,8 @@ export type Status =
 export interface IChangedFile {
   filename: string
   status: Status
+  additions: number
+  deletions: number
 }
 
 interface IGithubFile {
@@ -35,6 +37,8 @@ function buildFile(file: IGithubFile): IChangedFile {
   return {
     filename: file.filename,
     status: file.status,
+    additions: file.additions,
+    deletions: file.deletions,
   }
 }
 

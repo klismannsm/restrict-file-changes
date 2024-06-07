@@ -5,8 +5,10 @@ import { getPullRequestInfo } from './github-info'
 
 function getEvaluatorFlags(): IEvaluatorFlags {
   return {
-    allowNewFiles: 'true' === core.getInput('allowNewFiles'),
+    allowAddedFiles: 'true' === core.getInput('allowNewFiles'),
     allowRemovedFiles: 'true' === core.getInput('allowRemovedFiles'),
+    allowAdditions: 'true' === core.getInput('allowAdditions'),
+    allowDeletions: 'true' === core.getInput('allowDeletions'),
   }
 }
 
