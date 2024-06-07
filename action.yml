@@ -14,12 +14,20 @@ inputs:
   regex:
     description: Regex to match the changed files paths (Javascript format)
     required: true
-  allowNewFiles:
+  allowAddedFiles:
     description: Allow new files to be added
     required: false
     default: false
   allowRemovedFiles:
     description: Allow files to be removed
+    required: false
+    default: false
+  allowAdditions:
+    description: Allow content to be added
+    required: false
+    default: false
+  allowDeletions:
+    description: Allow content to be removed
     required: false
     default: false
 
